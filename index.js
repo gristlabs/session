@@ -99,6 +99,9 @@ function session(options) {
   // get the session store
   var store = opts.store || new MemoryStore()
 
+  // get the request-aware domain
+  var requestDomain = opts.requestDomain
+
   // get the trust proxy setting
   var trustProxy = opts.proxy
 
@@ -159,6 +162,10 @@ function session(options) {
     req.sessionID = generateId(req);
     req.session = new Session(req);
     req.session.cookie = new Cookie(cookieOptions);
+
+    if (requestDomain) {
+      req.session.cookie.domain = requestDomain(req);
+    }
 
     if (cookieOptions.secure === 'auto') {
       req.session.cookie.secure = issecure(req, trustProxy);
