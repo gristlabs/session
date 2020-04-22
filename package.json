@@ -1,5 +1,5 @@
 {
-  "name": "express-session",
+  "name": "@gristlabs/express-session",
   "version": "1.18.1",
   "description": "Simple session middleware for Express",
   "author": "TJ Holowaychuk <tj@vision-media.ca> (http://tjholowaychuk.com)",
@@ -7,7 +7,7 @@
     "Douglas Christopher Wilson <doug@somethingdoug.com>",
     "Joe Wagner <njwjs722@gmail.com>"
   ],
-  "repository": "expressjs/session",
+  "repository": "gristlabs/session",
   "license": "MIT",
   "dependencies": {
     "cookie": "0.7.2",
