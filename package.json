@@ -1,6 +1,6 @@
 {
   "name": "@gristlabs/express-session",
-  "version": "1.18.1~grist1",
+  "version": "1.18.1-grist1",
   "description": "Simple session middleware for Express",
   "author": "TJ Holowaychuk <tj@vision-media.ca> (http://tjholowaychuk.com)",
   "contributors": [
