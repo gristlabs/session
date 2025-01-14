@@ -200,7 +200,11 @@ function session(options) {
 
     // pathname mismatch
     var originalPath = parseUrl.original(req).pathname || '/'
-    if (originalPath.indexOf(cookieOptions.path || '/') !== 0) return next();
+    if (originalPath.indexOf(cookieOptions.path || '/') !== 0) {
+      debug('pathname mismatch')
+      next()
+      return
+    }
 
     // ensure a secret is available or bail
     if (!secret && !req.secret) {
@@ -247,7 +251,11 @@ function session(options) {
       }
 
       // set cookie
-      setcookie(res, name, req.sessionID, secrets[0], req.session.cookie.data);
+      try {
+        setcookie(res, name, req.sessionID, secrets[0], req.session.cookie.data)
+      } catch (err) {
+        defer(next, err)
+      }
     });
 
     // proxy end() to commit the session
@@ -277,6 +285,10 @@ function session(options) {
       function writetop() {
         if (!sync) {
           return ret;
+        }
+
+        if (!res._header) {
+          res._implicitHeader()
         }
 
         if (chunk == null) {
@@ -383,6 +395,16 @@ function session(options) {
       wrapmethods(req.session)
     }
 
+    function rewrapmethods (sess, callback) {
+      return function () {
+        if (req.session !== sess) {
+          wrapmethods(req.session)
+        }
+
+        callback.apply(this, arguments)
+      }
+    }
+
     // wrap session methods
     function wrapmethods(sess) {
       var _reload = sess.reload
@@ -390,10 +412,7 @@ function session(options) {
 
       function reload(callback) {
         debug('reloading %s', this.id)
-        _reload.call(this, function () {
-          wrapmethods(req.session)
-          callback.apply(this, arguments)
-        })
+        _reload.call(this, rewrapmethods(this, callback))
       }
 
       function save() {
@@ -440,7 +459,7 @@ function session(options) {
         return false;
       }
 
-      return !saveUninitializedSession && cookieId !== req.sessionID
+      return !saveUninitializedSession && !savedHash && cookieId !== req.sessionID
         ? isModified(req.session)
         : !isSaved(req.session)
     }

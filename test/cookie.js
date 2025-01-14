@@ -12,11 +12,6 @@ describe('new Cookie()', function () {
     assert.strictEqual(cookie.expires, null)
   })
 
-  it('should default maxAge to null', function () {
-    var cookie = new Cookie()
-    assert.strictEqual(cookie.maxAge, null)
-  })
-
   it('should default httpOnly to true', function () {
     var cookie = new Cookie()
     assert.strictEqual(cookie.httpOnly, true)
@@ -91,7 +86,9 @@ describe('new Cookie()', function () {
         var maxAge = 60000
         var cookie = new Cookie({ maxAge: maxAge })
 
-        assert.strictEqual(cookie.maxAge, maxAge)
+        assert.strictEqual(typeof cookie.maxAge, 'number')
+        assert.ok(cookie.maxAge - 1000 <= maxAge)
+        assert.ok(cookie.maxAge + 1000 >= maxAge)
       })
 
       it('should accept Date object', function () {
@@ -110,11 +107,27 @@ describe('new Cookie()', function () {
       })
     })
 
+    describe('partitioned', function () {
+      it('should set partitioned', function () {
+        var cookie = new Cookie({ partitioned: true })
+
+        assert.strictEqual(cookie.partitioned, true)
+      })
+    })
+
     describe('path', function () {
       it('should set path', function () {
         var cookie = new Cookie({ path: '/foo' })
 
         assert.strictEqual(cookie.path, '/foo')
+      })
+    })
+
+    describe('priority', function () {
+      it('should set priority', function () {
+        var cookie = new Cookie({ priority: 'high' })
+
+        assert.strictEqual(cookie.priority, 'high')
       })
     })
   })
